@@ -10,7 +10,7 @@ import {
   Alert
 } from 'react-native';
 
-export default function Login({ goToRegister, onForgotPassword }) {
+export default function Login({ goToRegister, onForgotPassword, goToWelcome }) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
 
