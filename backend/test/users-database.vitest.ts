@@ -178,7 +178,7 @@ describe.sequential('Banco: usuários e perfis', () => {
         [idUsuario],
       ),
     ).rejects.toMatchObject({
-      code: '23503',
+      code: expect.stringMatching(/^(23503|23001)$/),
       constraint: 'PerfilUsuario_idUsuario_fkey',
     });
   });

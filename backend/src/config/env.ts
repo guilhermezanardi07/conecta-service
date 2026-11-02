@@ -11,6 +11,8 @@ const envSchema = z.object({
     .enum(['true', 'false'])
     .default('false')
     .transform((value) => value === 'true'),
+
+  DATABASE_URL: z.string().min(1),
 });
 
 export function validateEnv(input: Record<string, unknown>) {
