@@ -1,31 +1,21 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  ImageBackground,
-  Image,
-  Alert
-} from 'react-native';
+import { Alert } from 'react-native';
+import { Tela, Caixa, Titulo, Campo, LinkTexto, Botao } from '../../components/Tela';
 
-export default function CriaLogin({ goBack }) {
+export default function CriaLogin({ goToLogin }) {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [cpf, setCpf] = useState('');
   const [senha, setSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
 
-  
-  const formatCpf = (value) => {
-    let v = value.replace(/\D/g, '');
+  const formatCpf = (text) => {
+    const numbers = text.replace(/\D/g, '').slice(0, 11);
 
-    v = v.replace(/(\d{3})(\d)/, '$1.$2');
-    v = v.replace(/(\d{3})(\d)/, '$1.$2');
-    v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-
-    setCpf(v);
+    return numbers
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
   };
 
   const handleRegister = () => {
@@ -39,146 +29,57 @@ export default function CriaLogin({ goBack }) {
       return;
     }
 
-    Alert.alert('Sucesso', 'Cadastro realizado (simulação)');
+    Alert.alert('Sucesso', 'Conta criada!');
+    goToLogin();
   };
 
   return (
-    <ImageBackground
-      source={require('../../img/fundLogin.png')}
-      style={styles.background}
-      imageStyle={styles.image}
-    >
-      <View style={styles.overlay}>
+    <Tela>
+      <Caixa top={351} altura={449} />
+      <Titulo top={375}>Criar Conta</Titulo>
 
-        <View style={styles.card}>
+      <Campo
+        top={419}
+        placeholder="nome completo"
+        value={nome}
+        onChangeText={setNome}
+      />
+      <Campo
+        top={490}
+        placeholder="email"
+        value={email}
+        onChangeText={setEmail}
+      />
+      <Campo
+        top={557}
+        placeholder="cpf"
+        keyboardType="numeric"
+        maxLength={14}
+        value={cpf}
+        onChangeText={(text) => setCpf(formatCpf(text))}
+      />
+      <Campo
+        top={624}
+        placeholder="Senha"
+        secureTextEntry
+        value={senha}
+        onChangeText={setSenha}
+      />
+      <Campo
+        top={691}
+        placeholder="confirmar Senha"
+        secureTextEntry
+        value={confirmarSenha}
+        onChangeText={setConfirmarSenha}
+      />
 
-          {/* LOGO */}
-          <Image
-            source={require('../../img/logo.png')}
-            style={styles.logo}
-          />
+      <LinkTexto top={749} onPress={goToLogin}>
+        já tem conta? voltar
+      </LinkTexto>
 
-          <Text style={styles.title}>Criar Conta</Text>
-
-          <TextInput
-            style={styles.input}
-            placeholder="Nome completo"
-            placeholderTextColor="#ccc"
-            value={nome}
-            onChangeText={setNome}
-          />
-
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            placeholderTextColor="#ccc"
-            value={email}
-            onChangeText={setEmail}
-          />
-
-          <TextInput
-            style={styles.input}
-            placeholder="CPF"
-            placeholderTextColor="#ccc"
-            value={cpf}
-            onChangeText={formatCpf}
-            keyboardType="numeric"
-            maxLength={14}
-          />
-
-          <TextInput
-            style={styles.input}
-            placeholder="Senha"
-            placeholderTextColor="#ccc"
-            secureTextEntry
-            value={senha}
-            onChangeText={setSenha}
-          />
-
-          <TextInput
-            style={styles.input}
-            placeholder="Confirmar senha"
-            placeholderTextColor="#ccc"
-            secureTextEntry
-            value={confirmarSenha}
-            onChangeText={setConfirmarSenha}
-          />
-
-          <TouchableOpacity style={styles.button} onPress={handleRegister}>
-            <Text style={styles.buttonText}>Continuar</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={goBack}>
-            <Text style={{ color: '#5ca9fa', marginTop: 15, borderRadius: 20, }}>
-              Já tem conta? Voltar
-            </Text>
-          </TouchableOpacity>
-
-        </View>
-
-      </View>
-    </ImageBackground>
+      <Botao top={774} onPress={handleRegister}>
+        Entrar
+      </Botao>
+    </Tela>
   );
 }
-
-const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-  },
-
-  image: {
-    opacity: 0.3,
-  },
-
-  overlay: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(40, 47, 86, 0.6)',
-  },
-
-  card: {
-    width: '85%',
-    backgroundColor: 'rgba(255,255,255,0.5)',
-    padding: 20,
-    borderRadius: 15,
-    alignItems: 'center',
-  },
-
-  logo: {
-    width: 100,
-    height: 100,
-    resizeMode: 'contain',
-    position: 'absolute',
-    top: -50,
-  },
-
-  title: {
-    color: 'white',
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginTop: 60,
-    marginBottom: 20,
-  },
-
-  input: {
-    width: '100%',
-    backgroundColor: 'rgba(255,255,255,0.9)',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 12,
-  },
-
-  button: {
-    backgroundColor: '#0ba8af',
-    padding: 15,
-    borderRadius: 10,
-    width: '100%',
-    alignItems: 'center',
-    marginTop: 10,
-  },
-
-  buttonText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-});
