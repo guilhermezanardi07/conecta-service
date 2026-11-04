@@ -1,4 +1,25 @@
 import { z } from 'zod';
+import { corsOriginsSchema } from './cors';
+
+const databaseUrlSchema = z.string().min(1).refine(
+  (value) => {
+    try {
+      const url = new URL(value);
+
+      return (
+        ['postgresql:', 'postgres:'].includes(url.protocol) &&
+        url.hostname.length > 0 &&
+        url.username.length > 0 &&
+        url.pathname.length > 1
+      );
+    } catch {
+      return false;
+    }
+  },
+  {
+    message: 'Informe uma URL válida de conexão PostgreSQL.',
+  },
+);
 
 const envSchema = z.object({
   NODE_ENV: z
@@ -12,7 +33,23 @@ const envSchema = z.object({
     .default('false')
     .transform((value) => value === 'true'),
 
-  DATABASE_URL: z.string().min(1),
+  DATABASE_URL: databaseUrlSchema,
+
+  CORS_ORIGINS: corsOriginsSchema,
+
+  JWT_SECRET: z
+    .string()
+    .regex(
+      /^[a-fA-F0-9]{64}$/,
+      'Informe um segredo aleatório de 32 bytes em hexadecimal.',
+    ),
+
+  JWT_EXPIRES_IN_SECONDS: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(900)
+    .default(900),
 });
 
 export function validateEnv(input: Record<string, unknown>) {
