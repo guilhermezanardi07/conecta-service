@@ -1,6 +1,15 @@
 import React, { useState } from 'react';
-import { Alert } from 'react-native';
 import { Tela, Caixa, Titulo, Campo, LinkTexto, Botao } from '../../components/Tela';
+import { cadastrar } from '../../services/api';
+import { mostrarAviso } from '../../utils/aviso';
+
+// A tela de cadastro (Figma) não tem escolha de papel, mas a API exige um.
+// Por enquanto todo cadastro entra como CONTRATANTE. Para mudar, troque
+// aqui por 'PRESTADOR' (ou adicione uma escolha na tela mais tarde).
+const PAPEL_PADRAO = 'CONTRATANTE';
+
+// A API exige senha com pelo menos 15 caracteres.
+const SENHA_MINIMA = 15;
 
 export default function CriaLogin({ goToLogin }) {
   const [nome, setNome] = useState('');
@@ -9,6 +18,10 @@ export default function CriaLogin({ goToLogin }) {
   const [senha, setSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
 
+  // Evita enviar o cadastro duas vezes se o usuário tocar no botão repetidamente.
+  const [carregando, setCarregando] = useState(false);
+
+  // Aplica a máscara 000.000.000-00 enquanto o usuário digita o CPF.
   const formatCpf = (text) => {
     const numbers = text.replace(/\D/g, '').slice(0, 11);
 
@@ -18,19 +31,52 @@ export default function CriaLogin({ goToLogin }) {
       .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
   };
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
+    if (carregando) {
+      return;
+    }
+
+    // Validações rápidas no app, antes de chamar a API.
     if (!nome || !email || !cpf || !senha || !confirmarSenha) {
-      Alert.alert('Erro', 'Preencha todos os campos');
+      mostrarAviso('Erro', 'Preencha todos os campos');
       return;
     }
 
     if (senha !== confirmarSenha) {
-      Alert.alert('Erro', 'As senhas não coincidem');
+      mostrarAviso('Erro', 'As senhas não coincidem');
       return;
     }
 
-    Alert.alert('Sucesso', 'Conta criada!');
-    goToLogin();
+    if (senha.length < SENHA_MINIMA) {
+      mostrarAviso(
+        'Erro',
+        `A senha deve ter pelo menos ${SENHA_MINIMA} caracteres`,
+      );
+      return;
+    }
+
+    setCarregando(true);
+
+    try {
+      // Chama a API para criar a conta. O CPF vai com a máscara; a API valida
+      // os dígitos e guarda no formato 000.000.000-00.
+      await cadastrar({
+        nome,
+        email,
+        cpf,
+        senha,
+        confirmacaoSenha: confirmarSenha,
+        papel: PAPEL_PADRAO,
+      });
+
+      mostrarAviso('Sucesso', 'Conta criada! Faça login para continuar.');
+      goToLogin();
+    } catch (erro) {
+      // E-mail já cadastrado, CPF inválido, API desligada etc.
+      mostrarAviso('Erro', erro.message);
+    } finally {
+      setCarregando(false);
+    }
   };
 
   return (

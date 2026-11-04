@@ -1,18 +1,39 @@
 import React, { useState } from 'react';
-import { Alert } from 'react-native';
 import { Tela, Caixa, Titulo, Campo, LinkTexto, Botao } from '../../components/Tela';
+import { entrar } from '../../services/api';
+import { mostrarAviso } from '../../utils/aviso';
 
 export default function Login({ goToRegister, onForgotPassword, goToWelcome }) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
 
-  const handleLogin = () => {
-    if (!email || !senha) {
-      Alert.alert('Erro', 'Preencha todos os campos');
+  // Evita enviar o login duas vezes se o usuário tocar no botão repetidamente.
+  const [carregando, setCarregando] = useState(false);
+
+  const handleLogin = async () => {
+    if (carregando) {
       return;
     }
 
-    goToWelcome();
+    if (!email || !senha) {
+      mostrarAviso('Erro', 'Preencha todos os campos');
+      return;
+    }
+
+    setCarregando(true);
+
+    try {
+      // Chama a API. Se o login der certo, recebemos o token e os dados do usuário.
+      const sessao = await entrar(email, senha);
+
+      // Entrega a sessão para o App.js, que guarda os dados e troca de tela.
+      goToWelcome(sessao);
+    } catch (erro) {
+      // Email/senha inválidos, API desligada etc. A mensagem já vem pronta.
+      mostrarAviso('Erro', erro.message);
+    } finally {
+      setCarregando(false);
+    }
   };
 
   return (
