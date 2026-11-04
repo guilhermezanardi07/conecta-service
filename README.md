@@ -190,4 +190,114 @@ npx expo start --web
 
 O app abre no navegador em `http://localhost:8081`.
 
-**Para testar no
+**Para testar no celular:** rode `npx expo start`, abra o **Expo Go** e leia o QR Code. O celular e o computador precisam estar na **mesma rede Wi-Fi**. O app descobre sozinho o endereço da API. Se o Windows pedir permissão de rede para a porta 3000, permita.
+
+## 🧪 Testando a API
+
+Com o backend rodando, abra o **Swagger**: `http://localhost:3000/docs`
+
+### Rotas disponíveis
+
+| Método | Rota | Descrição |
+|---|---|---|
+| `GET` | `/api/health` | Verifica se a API e o banco estão no ar |
+| `POST` | `/api/auth/register` | Cria uma conta |
+| `POST` | `/api/auth/login` | Autentica e devolve o token JWT |
+
+### Cadastro: `POST /api/auth/register`
+
+```json
+{
+  "nome": "Maria Silva",
+  "email": "maria@teste.com",
+  "cpf": "529.982.247-25",
+  "senha": "senha-segura-123456",
+  "confirmacaoSenha": "senha-segura-123456",
+  "papel": "CONTRATANTE"
+}
+```
+
+Regras:
+
+- `cpf`: precisa ser válido, com ou sem pontuação. É salvo como `000.000.000-00`.
+- `senha`: de 15 a 128 caracteres.
+- `papel`: `CONTRATANTE` ou `PRESTADOR`.
+- `email`: único (cadastrar de novo devolve `409`).
+
+### Login: `POST /api/auth/login`
+
+```json
+{
+  "email": "maria@teste.com",
+  "senha": "senha-segura-123456"
+}
+```
+
+Resposta (`200`):
+
+```json
+{
+  "accessToken": "eyJhbGciOi...",
+  "tokenType": "Bearer",
+  "expiresIn": 900,
+  "usuario": {
+    "idUsuario": 1,
+    "nome": "Maria Silva",
+    "email": "maria@teste.com",
+    "papeis": ["CONTRATANTE"]
+  }
+}
+```
+
+O token vale 15 minutos. Senha ou e-mail incorretos devolvem `401`.
+
+### Testes automatizados
+
+Com o banco ligado e o `seed` aplicado, na pasta `backend`:
+
+```bash
+npm test
+```
+
+> Os testes de integração criam usuários temporários no banco e apagam em seguida.
+
+## ⚙️ Variáveis de ambiente (backend)
+
+| Variável | Descrição |
+|---|---|
+| `NODE_ENV` | `development`, `test` ou `production` |
+| `PORT` | Porta da API (padrão `3000`) |
+| `SWAGGER_ENABLED` | `true` liga a documentação em `/docs` |
+| `DATABASE_URL` | Endereço de conexão com o PostgreSQL |
+| `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` | Usadas só pelo Docker Compose |
+| `CORS_ORIGINS` | Endereços web autorizados a chamar a API, separados por vírgula |
+| `JWT_SECRET` | Segredo para assinar os tokens (gerado no passo 2.2) |
+| `JWT_EXPIRES_IN_SECONDS` | Validade do token em segundos (padrão `900`) |
+
+## 🩺 Problemas comuns
+
+- **"Não foi possível conectar ao servidor" no app:** a API não está rodando, ou a porta do navegador não está no `CORS_ORIGINS`. Veja a porta na barra de endereço e confira o `.env`.
+- **Erro ao cadastrar dizendo que o tipo de usuário não está disponível (`503`):** faltou rodar `npx prisma db seed`.
+- **`Cannot find module '../generated/prisma/client'`:** faltou rodar `npx prisma generate`.
+- **"autenticação do tipo senha falhou":** a senha do `.env` não bate com a do banco. Com Docker, apague o volume e suba de novo: `docker compose down -v` e depois `docker compose up -d`.
+- **Os testes falham ao conectar no banco:** confira se o banco está ligado e se o `DATABASE_URL` está certo.
+
+## 👥 Equipe
+
+- Arthur Francisco Mendonça Lima
+- Bruno Seleguim dos Santos
+- Guilherme Zanardi Visoná
+- Matheus Henrique Bernardes de Oliveira
+- Rafael Dias de Melo
+
+**Orientador:** Prof. Jeferson
+**Instituição:** Faculdade de Tecnologia Professor José Camargo, Fatec Jales
+**Curso:** Tecnologia em Análise e Desenvolvimento de Sistemas (ADS - AMS)
+
+---
+
+<div align="center">
+
+Feito com 💙 pela equipe do Conecta Service
+
+</div>
