@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil - App de Serviços</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="app">
+
+    <!-- ========== MENU LATERAL ========== -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+    <aside class="side-menu" id="sideMenu" aria-hidden="true">
+      <div class="side-menu-header">
+        <span>MENU</span>
+        <button class="icon-btn" id="menuClose" aria-label="Fechar menu">&times;</button>
+      </div>
+      <nav>
+        <a href="#" class="menu-link">Meu perfil</a>
+        <a href="#" class="menu-link">Serviços contratados</a>
+        <a href="#" class="menu-link">Avaliações</a>
+        <a href="#" class="menu-link">Configurações</a>
+        <a href="#" class="menu-link">Sair</a>
+      </nav>
+    </aside>
+
+    <!-- ========== TELA DE PERFIL ========== -->
+    <section class="screen active">
+
+      <header class="topbar">
+        <svg class="logo" viewBox="0 0 40 32" aria-label="Logo">
+          <path d="M12 4 L4 16 L12 28 L20 28 L14 16 L20 4 Z" fill="#19b3e6"/>
+          <path d="M28 4 L36 16 L28 28 L20 28 L26 16 L20 4 Z" fill="#19b3e6" opacity=".75"/>
+        </svg>
+
+        <!-- Ícone de casa: volta para a tela inicial (index.html) -->
+        <button class="icon-btn home-btn" id="homeBtn" aria-label="Voltar ao início">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 11 12 3l9 8"/>
+            <path d="M5 10v10h5v-6h4v6h5V10"/>
+          </svg>
+        </button>
+
+        <button class="icon-btn hamburger" data-menu-open aria-label="Abrir menu">
+          <span></span><span></span><span></span>
+        </button>
+      </header>
+
+      <div class="profile-card">
+        <div class="profile-avatar-wrap">
+          <div class="avatar avatar-xl">JE</div>
+          <button class="edit-btn" aria-label="Editar foto">&#9998;</button>
+        </div>
+
+        <span class="status status-corner"><i class="dot"></i>ATIVO</span>
+
+        <h2 class="profile-name">JUNIOR ESQUEIATTO DOS SANTOS</h2>
+
+        <div class="profile-row">
+          <span>IDADE: 23</span>
+          <span class="gold">USUARIO OURO</span>
+        </div>
+
+        <div class="profile-cities">CIDADES QUE PRESTA SERVIÇOS: MANINÓPOLIS</div>
+
+        <div class="map-box">
+          <div class="map-title">MAPA DE SERVIÇOS CONTRATADOS</div>
+          <div class="map-item"></div>
+          <div class="map-item"></div>
+          <div class="map-item"></div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <script src="menu.js"></script>
+  <script src="perfil.js"></script>
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Início - App de Serviços</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="app">
+
+    <!-- ========== MENU LATERAL ========== -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+    <aside class="side-menu" id="sideMenu" aria-hidden="true">
+      <div class="side-menu-header">
+        <span>MENU</span>
+        <button class="icon-btn" id="menuClose" aria-label="Fechar menu">&times;</button>
+      </div>
+      <nav>
+        <a href="#" class="menu-link">Meu perfil</a>
+        <a href="#" class="menu-link">Serviços contratados</a>
+        <a href="#" class="menu-link">Avaliações</a>
+        <a href="#" class="menu-link">Configurações</a>
+        <a href="#" class="menu-link">Sair</a>
+      </nav>
+    </aside>
+
+    <!-- ========== TELA INICIAL ========== -->
+    <section class="screen active">
+
+      <header class="topbar">
+        <svg class="logo" viewBox="0 0 40 32" aria-label="Logo">
+          <path d="M12 4 L4 16 L12 28 L20 28 L14 16 L20 4 Z" fill="#19b3e6"/>
+          <path d="M28 4 L36 16 L28 28 L20 28 L26 16 L20 4 Z" fill="#19b3e6" opacity=".75"/>
+        </svg>
+
+        <div class="topbar-right">
+          <!-- Clicar na foto abre a tela de perfil (perfil.html) -->
+          <button class="avatar avatar-sm" id="profileBtn" aria-label="Abrir meu perfil">
+            <!-- Troque por: <img src="caminho/da-foto.jpg" alt=""> -->
+            JE
+          </button>
+          <button class="icon-btn hamburger" data-menu-open aria-label="Abrir menu">
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+      </header>
+
+      <div class="tabs">
+        <button class="tab">AVALIAÇÕES</button>
+        <button class="tab">VER SERVIÇOS CONTRATADOS</button>
+      </div>
+
+      <div class="search-wrap">
+        <input type="text" class="search" placeholder="PROCURAR SERVIÇOS E PROFICIONAIS">
+        <span class="search-icon">&#128269;</span>
+      </div>
+
+      <div class="section-title">
+        CONHEÇA PROFICIONAIS QUALIFICADOS<br>PERTO DE VOCE
+      </div>
+
+      <div class="pro-list-box">
+        <article class="pro-card">
+          <div class="avatar avatar-lg" style="background:#8a5a44">RM</div>
+          <div class="pro-info">
+            <div class="pro-head">
+              <strong class="pro-role">DIARISTA</strong>
+              <span class="status"><i class="dot"></i>ATIVO</span>
+            </div>
+            <div class="pro-name">RITA MIRANDA MARAIA</div>
+            <div class="stars" data-rating="4"></div>
+          </div>
+          <button class="see-more">VER MAIS</button>
+        </article>
+
+        <article class="pro-card">
+          <div class="avatar avatar-lg" style="background:#5b3a29">ED</div>
+          <div class="pro-info">
+            <div class="pro-head">
+              <strong class="pro-role">CARPINTEIRO</strong>
+              <span class="status"><i class="dot"></i>ATIVO</span>
+            </div>
+            <div class="pro-name">EMANUEL DOS SANTOS</div>
+            <div class="stars" data-rating="4"></div>
+          </div>
+          <button class="see-more">VER MAIS</button>
+        </article>
+
+        <article class="pro-card">
+          <div class="avatar avatar-lg" style="background:#6a8aa8">AM</div>
+          <div class="pro-info">
+            <div class="pro-head">
+              <strong class="pro-role">PEDREIRO</strong>
+              <span class="status"><i class="dot"></i>ATIVO</span>
+            </div>
+            <div class="pro-name">ANTONIO MARCOS DIAS</div>
+            <div class="stars" data-rating="3"></div>
+          </div>
+          <button class="see-more">VER MAIS</button>
+        </article>
+
+        <article class="pro-card">
+          <div class="avatar avatar-lg" style="background:#a0654a">MM</div>
+          <div class="pro-info">
+            <div class="pro-head">
+              <strong class="pro-role">MANICURE</strong>
+              <span class="status"><i class="dot"></i>ATIVO</span>
+            </div>
+            <div class="pro-name">MARCIA MARIA MADALENA</div>
+            <div class="stars" data-rating="2"></div>
+          </div>
+          <button class="see-more">VER MAIS</button>
+        </article>
+
+        <button class="see-more-pill">VER MAIS</button>
+      </div>
+
+      <div class="hire-wrap">
+        <button class="hire-btn">CONTRATAR SERVIÇO +</button>
+      </div>
+    </section>
+
+  </div>
+
+  <script src="menu.js"></script>
+  <script src="index.js"></script>
+</body>
+</html>
