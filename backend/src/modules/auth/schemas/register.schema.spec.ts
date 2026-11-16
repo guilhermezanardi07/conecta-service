@@ -112,10 +112,10 @@ describe('Validação do cadastro', () => {
     ['email', ''],
     ['email', 'email-invalido'],
     ['email', `${'a'.repeat(140)}@example.com`],
-    ['senha', 'a'.repeat(14)],
-    ['senha', 'a'.repeat(129)],
+    ['senha', 'a'.repeat(7)],
+    ['senha', 'a'.repeat(33)],
     ['confirmacaoSenha', ''],
-    ['confirmacaoSenha', 'a'.repeat(129)],
+    ['confirmacaoSenha', 'a'.repeat(33)],
     ['papel', 'ADMINISTRADOR'],
     ['papel', 'OUTRO'],
     ['papel', ''],
@@ -128,7 +128,7 @@ describe('Validação do cadastro', () => {
     expect(resultado.success).toBe(false);
   });
 
-  it.each([15, 128])(
+  it.each([8, 32])(
     'aceita senha com %i caracteres',
     (tamanho) => {
       const senha = 'a'.repeat(tamanho);
@@ -142,6 +142,56 @@ describe('Validação do cadastro', () => {
       expect(resultado.success).toBe(true);
     },
   );
+
+  it.each([7, 33])(
+    'rejeita senha com %i caracteres mesmo quando a confirmação coincide',
+    (tamanho) => {
+      const senha = 'a'.repeat(tamanho);
+
+      const resultado = registerSchema.safeParse({
+        ...cadastroValido(),
+        senha,
+        confirmacaoSenha: senha,
+      });
+
+      expect(resultado.success).toBe(false);
+
+      if (resultado.success) {
+        throw new Error('O cadastro deveria ter sido rejeitado.');
+      }
+
+      expect(resultado.error.issues).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            path: ['senha'],
+            code: tamanho < 8 ? 'too_small' : 'too_big',
+          }),
+        ]),
+      );
+    },
+  );
+
+  it('rejeita confirmação acima de 32 caracteres pelo limite de tamanho', () => {
+    const resultado = registerSchema.safeParse({
+      ...cadastroValido(),
+      confirmacaoSenha: 'a'.repeat(33),
+    });
+
+    expect(resultado.success).toBe(false);
+
+    if (resultado.success) {
+      throw new Error('O cadastro deveria ter sido rejeitado.');
+    }
+
+    expect(resultado.error.issues).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          path: ['confirmacaoSenha'],
+          code: 'too_big',
+        }),
+      ]),
+    );
+  });
 
   it.each([
     'nome',
