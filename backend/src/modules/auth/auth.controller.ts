@@ -74,8 +74,8 @@ export class AuthController {
           type: 'string',
           format: 'password',
           writeOnly: true,
-          minLength: 15,
-          maxLength: 128,
+          minLength: 8,
+          maxLength: 32,
           description: 'O conteúdo da senha é preservado exatamente.',
         },
         confirmacaoSenha: {
@@ -83,7 +83,7 @@ export class AuthController {
           format: 'password',
           writeOnly: true,
           minLength: 1,
-          maxLength: 128,
+          maxLength: 32,
           description: 'Deve ser exatamente igual à senha.',
         },
         papel: {

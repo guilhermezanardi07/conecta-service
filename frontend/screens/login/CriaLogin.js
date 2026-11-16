@@ -1,15 +1,22 @@
 import React, { useState } from 'react';
-import { Tela, Caixa, Titulo, Campo, LinkTexto, Botao } from '../../components/Tela';
+import {
+  Tela,
+  Caixa,
+  Titulo,
+  Campo,
+  LinkTexto,
+  Botao,
+} from '../../components/Tela';
 import { cadastrar } from '../../services/api';
 import { mostrarAviso } from '../../utils/aviso';
 
-// A tela de cadastro (Figma) não tem escolha de papel, mas a API exige um.
-// Por enquanto todo cadastro entra como CONTRATANTE. Para mudar, troque
-// aqui por 'PRESTADOR' (ou adicione uma escolha na tela mais tarde).
+// A tela ainda não possui escolha de papel.
+// Por enquanto, todo cadastro entra como CONTRATANTE.
 const PAPEL_PADRAO = 'CONTRATANTE';
 
-// A API exige senha com pelo menos 15 caracteres.
-const SENHA_MINIMA = 15;
+// O cadastro aceita senhas de 8 a 32 caracteres.
+const SENHA_MINIMA = 8;
+const SENHA_MAXIMA = 32;
 
 export default function CriaLogin({ goToLogin }) {
   const [nome, setNome] = useState('');
@@ -17,11 +24,9 @@ export default function CriaLogin({ goToLogin }) {
   const [cpf, setCpf] = useState('');
   const [senha, setSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
-
-  // Evita enviar o cadastro duas vezes se o usuário tocar no botão repetidamente.
   const [carregando, setCarregando] = useState(false);
 
-  // Aplica a máscara 000.000.000-00 enquanto o usuário digita o CPF.
+  // Aplica a máscara 000.000.000-00 enquanto o usuário digita.
   const formatCpf = (text) => {
     const numbers = text.replace(/\D/g, '').slice(0, 11);
 
@@ -36,7 +41,6 @@ export default function CriaLogin({ goToLogin }) {
       return;
     }
 
-    // Validações rápidas no app, antes de chamar a API.
     if (!nome || !email || !cpf || !senha || !confirmarSenha) {
       mostrarAviso('Erro', 'Preencha todos os campos');
       return;
@@ -55,11 +59,18 @@ export default function CriaLogin({ goToLogin }) {
       return;
     }
 
+    if (senha.length > SENHA_MAXIMA) {
+      mostrarAviso(
+        'Erro',
+        `A senha deve ter no máximo ${SENHA_MAXIMA} caracteres`,
+      );
+      return;
+    }
+
     setCarregando(true);
 
     try {
-      // Chama a API para criar a conta. O CPF vai com a máscara; a API valida
-      // os dígitos e guarda no formato 000.000.000-00.
+      // A API valida o CPF e armazena a senha somente como hash.
       await cadastrar({
         nome,
         email,
@@ -72,7 +83,6 @@ export default function CriaLogin({ goToLogin }) {
       mostrarAviso('Sucesso', 'Conta criada! Faça login para continuar.');
       goToLogin();
     } catch (erro) {
-      // E-mail já cadastrado, CPF inválido, API desligada etc.
       mostrarAviso('Erro', erro.message);
     } finally {
       setCarregando(false);
@@ -90,12 +100,14 @@ export default function CriaLogin({ goToLogin }) {
         value={nome}
         onChangeText={setNome}
       />
+
       <Campo
         top={490}
         placeholder="email"
         value={email}
         onChangeText={setEmail}
       />
+
       <Campo
         top={557}
         placeholder="cpf"
@@ -104,6 +116,7 @@ export default function CriaLogin({ goToLogin }) {
         value={cpf}
         onChangeText={(text) => setCpf(formatCpf(text))}
       />
+
       <Campo
         top={624}
         placeholder="Senha"
@@ -111,6 +124,7 @@ export default function CriaLogin({ goToLogin }) {
         value={senha}
         onChangeText={setSenha}
       />
+
       <Campo
         top={691}
         placeholder="confirmar Senha"
