@@ -5,7 +5,8 @@ import Welcome from './screens/Welcome';
 import Login from './screens/login/Login';
 import CriaLogin from './screens/login/CriaLogin';
 import ForgotPassword from './screens/login/ForgotPassword';
-import BemVindo from './screens/Welcome/bemVindo';
+import Index from './screens/index/Index';
+import Perfil from './screens/index/perfil/Perfil';
 
 export default function App() {
   const [screen, setScreen] = useState('welcome');
@@ -30,9 +31,9 @@ export default function App() {
         goToRegister={() => setScreen('register')}
         onForgotPassword={() => setScreen('forgot')}
         goToWelcome={(dadosLogin) => {
-          // Login aprovado pela API: guarda a sessão e vai para a próxima tela.
+          // Login aprovado pela API: guarda a sessão e vai para a tela inicial (Index).
           setSessao(dadosLogin);
-          setScreen('bemvindo');
+          setScreen('home');
         }}
       />
     );
@@ -46,14 +47,20 @@ export default function App() {
     return <ForgotPassword goToLogin={() => setScreen('login')} />;
   }
 
+  if (screen === 'perfil') {
+    return (
+      <Perfil
+        usuario={sessao ? sessao.usuario : null}
+        onBack={() => setScreen('home')}
+      />
+    );
+  }
+
+  // 'home' (tela inicial com a lista de profissionais)
   return (
-    <BemVindo
+    <Index
       usuario={sessao ? sessao.usuario : null}
-      onSair={() => {
-        // Sair: apaga a sessão e volta para o login.
-        setSessao(null);
-        setScreen('login');
-      }}
+      onOpenProfile={() => setScreen('perfil')}
     />
   );
 }
