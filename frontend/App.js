@@ -5,8 +5,12 @@ import Welcome from './screens/Welcome';
 import Login from './screens/login/Login';
 import CriaLogin from './screens/login/CriaLogin';
 import ForgotPassword from './screens/login/ForgotPassword';
-import Index from './screens/index/Index';
-import Perfil from './screens/index/perfil/Perfil';
+
+import { tipoDoUsuario } from './screens/usuarios/tipos';
+import HomeContratante from './screens/usuarios/contratante/HomeContratante';
+import PerfilContratante from './screens/usuarios/contratante/PerfilContratante';
+import HomePrestador from './screens/usuarios/prestador/HomePrestador';
+import PerfilPrestador from './screens/usuarios/prestador/PerfilPrestador';
 
 export default function App() {
   const [screen, setScreen] = useState('welcome');
@@ -31,7 +35,7 @@ export default function App() {
         goToRegister={() => setScreen('register')}
         onForgotPassword={() => setScreen('forgot')}
         goToWelcome={(dadosLogin) => {
-          // Login aprovado pela API: guarda a sessão e vai para a tela inicial (Index).
+          // Login aprovado pela API: guarda a sessão e abre a home do tipo do usuário.
           setSessao(dadosLogin);
           setScreen('home');
         }}
@@ -47,20 +51,21 @@ export default function App() {
     return <ForgotPassword goToLogin={() => setScreen('login')} />;
   }
 
+  // ===== Área logada: contratante ou prestador =====
+  const usuario = sessao ? sessao.usuario : null;
+  const ehPrestador = tipoDoUsuario(usuario) === 'prestador';
+
+  const sair = () => {
+    // Sair: apaga a sessão e volta para o login.
+    setSessao(null);
+    setScreen('login');
+  };
+
   if (screen === 'perfil') {
-    return (
-      <Perfil
-        usuario={sessao ? sessao.usuario : null}
-        onBack={() => setScreen('home')}
-      />
-    );
+    const Perfil = ehPrestador ? PerfilPrestador : PerfilContratante;
+    return <Perfil usuario={usuario} onBack={() => setScreen('home')} onSair={sair} />;
   }
 
-  // 'home' (tela inicial com a lista de profissionais)
-  return (
-    <Index
-      usuario={sessao ? sessao.usuario : null}
-      onOpenProfile={() => setScreen('perfil')}
-    />
-  );
+  const Home = ehPrestador ? HomePrestador : HomeContratante;
+  return <Home usuario={usuario} onOpenProfile={() => setScreen('perfil')} onSair={sair} />;
 }

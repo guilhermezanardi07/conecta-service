@@ -9,10 +9,7 @@ import {
 } from '../../components/Tela';
 import { cadastrar } from '../../services/api';
 import { mostrarAviso } from '../../utils/aviso';
-
-// A tela ainda não possui escolha de papel.
-// Por enquanto, todo cadastro entra como CONTRATANTE.
-const PAPEL_PADRAO = 'CONTRATANTE';
+import SeletorTipoUsuario from './SeletorTipoUsuario';
 
 // O cadastro aceita senhas de 8 a 32 caracteres.
 const SENHA_MINIMA = 8;
@@ -24,6 +21,8 @@ export default function CriaLogin({ goToLogin }) {
   const [cpf, setCpf] = useState('');
   const [senha, setSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
+  // 'PRESTADOR' | 'CONTRATANTE' | null (o usuário precisa escolher)
+  const [papel, setPapel] = useState(null);
   const [carregando, setCarregando] = useState(false);
 
   // Aplica a máscara 000.000.000-00 enquanto o usuário digita.
@@ -43,6 +42,11 @@ export default function CriaLogin({ goToLogin }) {
 
     if (!nome || !email || !cpf || !senha || !confirmarSenha) {
       mostrarAviso('Erro', 'Preencha todos os campos');
+      return;
+    }
+
+    if (!papel) {
+      mostrarAviso('Erro', 'Escolha se você é prestador ou contratante de serviços');
       return;
     }
 
@@ -77,7 +81,7 @@ export default function CriaLogin({ goToLogin }) {
         cpf,
         senha,
         confirmacaoSenha: confirmarSenha,
-        papel: PAPEL_PADRAO,
+        papel,
       });
 
       mostrarAviso('Sucesso', 'Conta criada! Faça login para continuar.');
@@ -89,27 +93,29 @@ export default function CriaLogin({ goToLogin }) {
     }
   };
 
+  // Layout: a caixa subiu 40 e os campos ficaram mais próximos (58 de distância)
+  // para abrir espaço ao seletor de tipo de conta. Ajuste os "top" se precisar.
   return (
     <Tela>
-      <Caixa top={351} altura={449} />
-      <Titulo top={375}>Criar Conta</Titulo>
+      <Caixa top={311} altura={489} />
+      <Titulo top={330}>Criar Conta</Titulo>
 
       <Campo
-        top={419}
+        top={372}
         placeholder="nome completo"
         value={nome}
         onChangeText={setNome}
       />
 
       <Campo
-        top={490}
+        top={430}
         placeholder="email"
         value={email}
         onChangeText={setEmail}
       />
 
       <Campo
-        top={557}
+        top={488}
         placeholder="cpf"
         keyboardType="numeric"
         maxLength={14}
@@ -118,7 +124,7 @@ export default function CriaLogin({ goToLogin }) {
       />
 
       <Campo
-        top={624}
+        top={546}
         placeholder="Senha"
         secureTextEntry
         value={senha}
@@ -126,12 +132,14 @@ export default function CriaLogin({ goToLogin }) {
       />
 
       <Campo
-        top={691}
+        top={604}
         placeholder="confirmar Senha"
         secureTextEntry
         value={confirmarSenha}
         onChangeText={setConfirmarSenha}
       />
+
+      <SeletorTipoUsuario top={664} valor={papel} onChange={setPapel} />
 
       <LinkTexto top={749} onPress={goToLogin}>
         já tem conta? voltar

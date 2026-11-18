@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import {
-  View, Text, ScrollView, TextInput, Pressable, StyleSheet, Platform, StatusBar,
-} from 'react-native';
+import { View, Text, ScrollView, TextInput, Pressable, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import MenuLateral from '../menuLateral';
+import TopBar from '../components/TopBar';
+import MenuLateral from '../components/MenuLateral';
+import Estrelas from '../components/Estrelas';
+import StatusAtivo from '../components/StatusAtivo';
+import { iniciais, MENU_CONTRATANTE } from '../tipos';
 
 const FONT = 'BebasNeue_400Regular';
 
-// Dados de exemplo (depois virão da API)
+// Dados de exemplo (depois virão da API: listagem de prestadores, RF12)
 const PROFISSIONAIS = [
   { id: 1, profissao: 'DIARISTA', nome: 'RITA MIRANDA MARAIA', nota: 4, cor: '#8a5a44', ini: 'RM' },
   { id: 2, profissao: 'CARPINTEIRO', nome: 'EMANUEL DOS SANTOS', nota: 4, cor: '#5b3a29', ini: 'ED' },
@@ -15,57 +17,19 @@ const PROFISSIONAIS = [
   { id: 4, profissao: 'MANICURE', nome: 'MARCIA MARIA MADALENA', nota: 2, cor: '#a0654a', ini: 'MM' },
 ];
 
-function iniciais(usuario) {
-  const nome = usuario && usuario.nome ? usuario.nome.trim() : '';
-  if (!nome) return 'EU';
-  const p = nome.split(/\s+/);
-  return (p[0][0] + (p.length > 1 ? p[p.length - 1][0] : '')).toUpperCase();
-}
-
-function Estrelas({ nota }) {
-  return (
-    <View style={{ flexDirection: 'row' }}>
-      {[1, 2, 3, 4, 5].map((i) => (
-        <Ionicons key={i} name="star" size={18} color={i <= nota ? '#ffd600' : '#d4d4d4'} />
-      ))}
-    </View>
-  );
-}
-
-function Ativo() {
-  return (
-    <View style={styles.status}>
-      <View style={styles.dot} />
-      <Text style={styles.statusText}>ATIVO</Text>
-    </View>
-  );
-}
-
-export default function Index({ usuario, onOpenProfile }) {
+export default function HomeContratante({ usuario, onOpenProfile, onSair }) {
   const [menuAberto, setMenuAberto] = useState(false);
 
   return (
     <View style={styles.screen}>
-      {/* Topo */}
-      <View style={styles.topbar}>
-        <Ionicons name="infinite" size={34} color="#19b3e6" />
-
-        <View style={styles.topbarRight}>
-          {/* Clicar na foto abre a tela de perfil */}
-          <Pressable style={styles.avatarSm} onPress={onOpenProfile}>
-            <Text style={styles.avatarSmText}>{iniciais(usuario)}</Text>
-          </Pressable>
-
-          <Pressable style={styles.hamburger} onPress={() => setMenuAberto(true)}>
-            <View style={styles.bar} />
-            <View style={styles.bar} />
-            <View style={styles.bar} />
-          </Pressable>
-        </View>
-      </View>
+      <TopBar
+        iniciais={iniciais(usuario && usuario.nome)}
+        foto={usuario && usuario.fotoPerfil}
+        onPressAvatar={onOpenProfile}
+        onOpenMenu={() => setMenuAberto(true)}
+      />
 
       <ScrollView contentContainerStyle={{ paddingBottom: 30 }}>
-        {/* Abas */}
         <View style={styles.tabs}>
           <Pressable style={styles.tab}><Text style={styles.tabText}>AVALIAÇÕES</Text></Pressable>
           <Pressable style={[styles.tab, styles.tabBorder]}>
@@ -73,25 +37,26 @@ export default function Index({ usuario, onOpenProfile }) {
           </Pressable>
         </View>
 
-        {/* Busca (ainda sem função) */}
         <View style={styles.searchWrap}>
           <TextInput
             style={styles.search}
-            placeholder="PROCURAR SERVIÇOS E PROFICIONAIS"
+            placeholder="PROCURAR SERVIÇOS E PROFISSIONAIS"
             placeholderTextColor="#aaa"
           />
           <Ionicons name="search" size={18} color="#888" style={styles.searchIcon} />
         </View>
 
-        <View style={styles.sectionTitle}>
-          <Text style={styles.sectionTitleText}>CONHEÇA PROFICIONAIS QUALIFICADOS</Text>
-          <Text style={styles.sectionTitleText}>PERTO DE VOCE</Text>
+        <View style={styles.banner}>
+          <Text style={styles.bannerText}>CONHEÇA PROFISSIONAIS QUALIFICADOS</Text>
+          <Text style={styles.bannerText}>PERTO DE VOCÊ</Text>
         </View>
 
-        {/* Lista */}
         <View style={styles.listBox}>
           {PROFISSIONAIS.map((p, idx) => (
-            <View key={p.id} style={[styles.card, idx === PROFISSIONAIS.length - 1 && { borderBottomWidth: 0 }]}>
+            <View
+              key={p.id}
+              style={[styles.card, idx === PROFISSIONAIS.length - 1 && { borderBottomWidth: 0 }]}
+            >
               <View style={[styles.avatarLg, { backgroundColor: p.cor }]}>
                 <Text style={styles.avatarLgText}>{p.ini}</Text>
               </View>
@@ -99,7 +64,7 @@ export default function Index({ usuario, onOpenProfile }) {
               <View style={styles.info}>
                 <View style={styles.infoHead}>
                   <Text style={styles.role}>{p.profissao}</Text>
-                  <Ativo />
+                  <StatusAtivo />
                 </View>
                 <Text style={styles.name} numberOfLines={1}>{p.nome}</Text>
                 <Estrelas nota={p.nota} />
@@ -123,33 +88,18 @@ export default function Index({ usuario, onOpenProfile }) {
         </View>
       </ScrollView>
 
-      <MenuLateral visible={menuAberto} onClose={() => setMenuAberto(false)} />
+      <MenuLateral
+        visible={menuAberto}
+        onClose={() => setMenuAberto(false)}
+        itens={MENU_CONTRATANTE}
+        onSair={onSair}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#cdeeff' },
-  topbar: {
-    backgroundColor: '#1b365d',
-    paddingTop: (Platform.OS === 'android' ? StatusBar.currentHeight || 24 : 48) + 8,
-    paddingBottom: 10,
-    paddingHorizontal: 14,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  topbarRight: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  avatarSm: {
-    width: 32, height: 32, borderRadius: 16, backgroundColor: '#b0865f',
-    borderWidth: 2, borderColor: '#19b3e6', alignItems: 'center', justifyContent: 'center',
-  },
-  avatarSmText: { color: '#fff', fontSize: 13, fontFamily: FONT },
-  hamburger: {
-    width: 28, height: 28, borderRadius: 3, backgroundColor: '#e8e8e8',
-    justifyContent: 'center', paddingHorizontal: 5, gap: 3,
-  },
-  bar: { height: 3, backgroundColor: '#1b365d', borderRadius: 2 },
 
   tabs: { flexDirection: 'row', backgroundColor: '#4a86d6' },
   tab: { flex: 1, paddingVertical: 16, alignItems: 'center' },
@@ -163,8 +113,8 @@ const styles = StyleSheet.create({
   },
   searchIcon: { position: 'absolute', right: 28, top: 22 },
 
-  sectionTitle: { backgroundColor: '#4a86d6', paddingVertical: 14, alignItems: 'center' },
-  sectionTitleText: { color: '#1b365d', fontSize: 17, fontFamily: FONT },
+  banner: { backgroundColor: '#4a86d6', paddingVertical: 14, alignItems: 'center' },
+  bannerText: { color: '#1b365d', fontSize: 17, fontFamily: FONT },
 
   listBox: {
     marginTop: 18, marginHorizontal: 14, backgroundColor: '#fff',
@@ -188,13 +138,6 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
   },
   seeMoreText: { color: '#aaa', fontSize: 16, fontFamily: FONT },
-
-  status: {
-    flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#e3e3e3',
-    borderRadius: 10, paddingVertical: 2, paddingLeft: 3, paddingRight: 8,
-  },
-  dot: { width: 11, height: 11, borderRadius: 6, backgroundColor: '#4cd964' },
-  statusText: { fontSize: 11, color: '#666', fontFamily: FONT },
 
   pillWrap: { alignItems: 'center', marginTop: -14 },
   pill: {
